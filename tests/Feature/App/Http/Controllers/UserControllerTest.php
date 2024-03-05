@@ -13,6 +13,13 @@ class UserControllerTest extends TestCase
 
     use RefreshDatabase;
 
+    public function setUp(): void
+    {
+        parent::setUp();
+
+        $this->seed();
+    }
+
     /**
      * A basic feature test example.
      */
@@ -21,8 +28,11 @@ class UserControllerTest extends TestCase
         $response = $this->postJson('/api/auth/register', [
             'name' => 'John Doe',
             'email' => 'johndoe@doe.com',
-            'password' => Hash::make('password')
+            'password' => Hash::make('password'),
+            'role' => 'standard'
         ]);
+
+
 
         $response->assertStatus(201);
     }
@@ -31,7 +41,8 @@ class UserControllerTest extends TestCase
     {
         $response = $this->postJson('/api/auth/register', [
             'email' => 'johndoe@doe.com',
-            'password' => Hash::make('password')
+            'password' => Hash::make('password'),
+            'role' => 'standard'
         ]);
 
         $response
@@ -42,7 +53,8 @@ class UserControllerTest extends TestCase
     {
         $response = $this->postJson('/api/auth/register', [
             'name' => 'John Doe',
-            'password' => Hash::make('password')
+            'password' => Hash::make('password'),
+            'role' => 'standard'
         ]);
 
         $response
@@ -54,6 +66,7 @@ class UserControllerTest extends TestCase
         $response = $this->postJson('/api/auth/register', [
             'name' => 'John Doe',
             'email' => 'johndoe@doe.com',
+            'role' => 'standard'
         ]);
 
         $response
@@ -67,7 +80,8 @@ class UserControllerTest extends TestCase
         $response = $this->postJson('/api/auth/register', [
             'name' => 'John Doe',
             'email' => $user->email,
-            'password' => Hash::make('password')
+            'password' => Hash::make('password'),
+            'role' => 'standard'
         ]);
 
         $response
@@ -84,7 +98,7 @@ class UserControllerTest extends TestCase
 
         $response = $this->postJson('api/auth/login', [
             'email' => $user->email,
-            'password' => 'password'
+            'password' => 'password',
         ]);
 
         $response->assertStatus(200);
@@ -96,7 +110,7 @@ class UserControllerTest extends TestCase
 
         $response = $this->postJson('api/auth/login', [
             'email' => 'wrongemail@test.com',
-            'password' => 'password'
+            'password' => 'password',
         ]);
 
         $response->assertStatus(400);
@@ -107,7 +121,7 @@ class UserControllerTest extends TestCase
         $user = User::factory()->create();
 
         $response = $this->postJson('api/auth/login', [
-            'password' => 'password'
+            'password' => 'password',
         ]);
 
         $response->assertStatus(422);

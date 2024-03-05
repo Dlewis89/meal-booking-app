@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Exceptions\CustomException;
 use App\Http\Requests\User\RegisterRequest;
 use App\Http\Requests\User\LoginRequest;
 use App\Models\User;
@@ -22,21 +23,34 @@ class UsersController extends Controller
                 throw new Exception('User exists with email', 400);
             }
 
-            User::create([
+            $user = User::create([
                 'name' => $request->name,
                 'email' => $request->email,
-                'password' => Hash::make($request->password)
+                'password' => Hash::make($request->password),
             ]);
+
+            $user->syncRoles($request->role);
 
             return response()->json([
                 'status' => true,
                 'message' => 'User is created successfully',
             ], 201);
-        } catch(Exception $e) {
+
+        } catch (CustomException $e) {
+
+            report($e);
             return response()->json([
                 'status' => false,
                 'message' => $e->getMessage(),
             ], $e->getCode());
+
+        }  catch(Exception $e) {
+
+            report($e);
+            return response()->json([
+                'status' => false,
+                'message' => $e->getMessage(),
+            ], 500);
         }
     }
 
@@ -58,8 +72,17 @@ class UsersController extends Controller
                 ])
             ], 200);
 
-        }catch(Exception $e) {
+        } catch (CustomException $e) {
 
+            report($e);
+            return response()->json([
+                'status' => false,
+                'message' => $e->getMessage(),
+            ], $e->getCode());
+
+        } catch(Exception $e) {
+
+            report($e);
             return response()->json([
                 'status' => false,
                 'message' => $e->getMessage(),
