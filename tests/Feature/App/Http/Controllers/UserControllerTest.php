@@ -73,4 +73,66 @@ class UserControllerTest extends TestCase
         $response
             ->assertStatus(422);
     }
+
+    /**
+     * User Login Tests
+     */
+
+    public function test_user_can_log_in_successfully(): void
+    {
+        $user = User::factory()->create();
+
+        $response = $this->postJson('api/auth/login', [
+            'email' => $user->email,
+            'password' => 'password'
+        ]);
+
+        $response->assertStatus(200);
+    }
+
+    public function test_user_can_not_log_in_with_bad_email(): void
+    {
+        $user = User::factory()->create();
+
+        $response = $this->postJson('api/auth/login', [
+            'email' => 'wrongemail@test.com',
+            'password' => 'password'
+        ]);
+
+        $response->assertStatus(400);
+    }
+
+    public function test_user_can_not_log_in_with_missing_email_field(): void
+    {
+        $user = User::factory()->create();
+
+        $response = $this->postJson('api/auth/login', [
+            'password' => 'password'
+        ]);
+
+        $response->assertStatus(422);
+    }
+
+    public function test_user_can_not_log_in_with_bad_password(): void
+    {
+        $user = User::factory()->create();
+
+        $response = $this->postJson('api/auth/login', [
+            'email' => $user->email,
+            'password' => 'wrongPasswordAttempt'
+        ]);
+
+        $response->assertStatus(400);
+    }
+
+    public function test_user_can_not_log_in_with_missing_password_field(): void
+    {
+        $user = User::factory()->create();
+
+        $response = $this->postJson('api/auth/login', [
+            'email' => $user->email,
+        ]);
+
+        $response->assertStatus(422);
+    }
 }
