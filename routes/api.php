@@ -1,9 +1,12 @@
 <?php
 
+use App\Http\Controllers\MealsControllers;
+use App\Http\Controllers\UsersController;
+use App\Models\Meal;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
-use App\Http\Controllers\UsersController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -22,3 +25,8 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 Route::post('auth/register', [UsersController::class, 'store']);
 Route::post('auth/login', [UsersController::class, 'login']);
+
+// Protected Routes
+Route::middleware('auth:sanctum')->group( function() {
+    Route::post('v1/meals', [MealsControllers::class, 'store'])->can('create', Meal::class);
+});

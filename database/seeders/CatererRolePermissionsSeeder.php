@@ -26,7 +26,7 @@ class CatererRolePermissionsSeeder extends Seeder
 
         foreach($permissions as $permission) {
 
-            $newPermission = Permission::firstOrCreate(['name' => $permission,  'guard_name' => 'api']);
+            $newPermission = Permission::firstOrCreate(['name' => $permission,  'guard_name' => 'web']);
 
             $newPermission->assignRole($role);
         }
